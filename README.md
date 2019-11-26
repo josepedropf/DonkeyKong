@@ -5,18 +5,7 @@
 
 #### Objetivo
 
-1. Criar um clone do clássico Donkey Kong em Pygame.
-
-2. Explorar algumas pequenas alterações ao jogo, de modo a dar um cunho único ao projeto 
-
-#### Repositório de código
-
-1) Link para o repositório do GitHub: https://github.com/fpro-feup/public/assigns/project.md
-
-2) Adicionar o prof. da Unidade (ver lista em baixo) e o "Lord of the Game" (aka Ricardo Cruz):
-
-- https://github.com/rpmcruz
-- https://github.com/jlopes60
+Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alterações ao jogo, de modo a dar um cunho único ao projeto 
 
 #### Descrição
 
@@ -24,7 +13,7 @@
 
 #### UI
 
-![UI](https://github.com/fpro-feup/public/blob/master/assigns/ui.png)
+![UI](donkeykong.png)
 
 ### Pacotes
 
@@ -32,9 +21,22 @@
 
 #### Tarefas
 
-1. carregar os níveis
-1. desenhar a matriz do nível
-1. ler teclas e mover as peças
-2. verificar se jogador chegou ao fim do nível
+1. **FUNDO**
+   1. plataformas (poligonos cheios a vermelho): lista de pontos ((x1, y1), (x2, y2))
+   1. escadas: lista de pontos ((x1, y1), (x2, y2))
+1. **JOGADOR**
+   1. jogador variáveis: pos_x, pos_y
+   1. desenhar o jogador, teclas esquerda-direita
+   1. salto: quando carrega, coloca variável tempo_salto=50. enquanto for positiva, vai para cima. vai decrescendo a variável ao longo do tempo até 0.
+   1. gravidade: se não estiver numa plataforma, ele cai a uma velocidade constante.
+   1. escadas: cima/baixo quando está numa escada.
+1. **BARRIL**
+   1. coordenadas pos_x, pos_y, dir (-1, 1). desenhava e ia movendo.
+   1. colisão entre o barril e o jogador (bounding box)
+1. **FUTURO**
+   * animações
+   * pontuação
+   * menu
+   * martelo
 
 ### 18/11/2019
