@@ -1,6 +1,6 @@
 # Donkey Kong
 ### FPRO/MIEIC, 2019/20
-### Fulano de Tal (up201904515@fe.up.pt)
+### José Pedro Peixoto Ferreira (up201904515@fe.up.pt)
 ### 1MIEIC04
 
 #### Objetivo
@@ -9,7 +9,7 @@ Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alt
 
 #### Descrição
 
-*--- O Donkey Kong é considerado o jogo percursor do género plataforma, considerado por muitos o maior hit dos arcades, que contou com---*
+*--- O Donkey Kong é considerado o jogo percursor do género plataforma, para muitos o maior hit dos arcades, que contou com versões para Atari 2600, NES, entre outras. ---*
 
 #### UI
 
