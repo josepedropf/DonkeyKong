@@ -1,10 +1,19 @@
 import pygame
+import math
 
 pygame.init()
-screen = pygame.display.set_mode((400, 300))
-done = False
+screen = pygame.display.set_mode((800, 600))
 
-while done == False:
+screen.fill((0, 0, 0))
+pygame.draw.polygon(screen, (255, 0, 0), ((0, 600), (800, 570), (0, 570), (800, 540)) # Primeira plataforma
+pygame.display.update()
+
+running = True
+while running is False:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
+            running = False
+            
+# Mario == 60p | Barril == 40p | Plataforma_largura == 30p | d_curta_plat = 60p | d_longa_plat = 120p
+
+
