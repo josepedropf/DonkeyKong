@@ -14,6 +14,6 @@ while running is False:
         if event.type == pygame.QUIT:
             running = False
             
-# Mario == 60p | Barril == 40p | Plataforma_largura == 30p | d_curta_plat = 60p | d_longa_plat = 120p
+# Mario == 60p | Barril == 40p | Plataforma_largura == 30p | d_curta_plat == 60p | d_longa_plat == 120p
 
 
