@@ -2,18 +2,38 @@ import pygame
 import math
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((800, 800))
+
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
 
 screen.fill((0, 0, 0))
-pygame.draw.polygon(screen, (255, 0, 0), ((0, 600), (800, 570), (0, 570), (800, 540)) # Primeira plataforma
+pygame.draw.polygon(screen, red, ((800, 740), (800, 770), (0, 800), (0, 770))) # Plataforma 1
+pygame.draw.polygon(screen, red, ((26, 619), (720, 653), (720, 683), (26, 649))) # Plataforma 2
+pygame.draw.polygon(screen, red, ((774, 504), (774, 534), (80, 562), (80, 532))) # Plataforma 3
+pygame.draw.polygon(screen, red, ((26, 382), (720, 416), (720, 446), (26, 412))) # Plataforma 4
+pygame.draw.polygon(screen, red, ((774, 266), (774, 296), (80, 325), (80, 295))) # Plataforma 5
+pygame.draw.polygon(screen, red, ((320, 159), (720, 178), (720, 208), (320, 189))) # Plataforma 6 (parte inclinada)
+pygame.draw.polygon(screen, red, ((26, 159), (320, 159), (320, 189), (26, 189))) # Plataforma 6 (parte plana)
 pygame.display.update()
 
 running = True
-while running is False:
+clock = pygame.time.Clock()
+
+while running is True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             
-# Mario == 60p | Barril == 40p | Plataforma_largura == 30p | d_curta_plat == 60p | d_longa_plat == 120p
-
+            
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_q]:
+        pygame.QUIT
+     
+            
+# Mario == 60p | Barril == 40p |
+# Plataforma_largura == 30p | Plataforma_comp == 80p | Mini_plat == 54p (-26p)
+# d_curta_plat == 60p | d_longa_plat == 120p
+# Oil na segunda plat | Mario na terceira
 
