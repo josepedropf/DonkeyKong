@@ -16,6 +16,8 @@ pygame.draw.polygon(screen, red, ((26, 382), (720, 416), (720, 446), (26, 412)))
 pygame.draw.polygon(screen, red, ((774, 266), (774, 296), (80, 325), (80, 295))) # Plataforma 5
 pygame.draw.polygon(screen, red, ((320, 159), (720, 178), (720, 208), (320, 189))) # Plataforma 6 (parte inclinada)
 pygame.draw.polygon(screen, red, ((26, 159), (320, 159), (320, 189), (26, 189))) # Plataforma 6 (parte plana)
+pygame.draw.polygon(screen, red, ((320, 69), (480, 69), (480, 99), (320, 99))) # Plataforma Princesa
+pygame.draw.polygon(screen, red, ((240, 99), (320, 99), (320, 129), (240, 129))) # Plataforma Barris
 pygame.display.update()
 
 running = True
@@ -31,8 +33,10 @@ while running is True:
     if keys[pygame.K_q]:
         pygame.QUIT
      
-            
-# Mario == 60p | Barril == 40p |
+pygame.quit()
+
+
+# Mario == 60p (altura) * 40p (largura) | Barril == 40p |
 # Plataforma_largura == 30p | Plataforma_comp == 80p | Mini_plat == 54p (-26p)
 # d_curta_plat == 60p | d_longa_plat == 120p
 # Oil na segunda plat | Mario na terceira
