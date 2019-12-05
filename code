@@ -12,12 +12,14 @@ blue = (0, 0, 255)
 
 x = 180
 y = 703
-
+cplat = 0
 jumptime = 0
-G = 0.1
 
-size = (40, 60)
-Mario = pygame.transform.scale(pygame.image.load("mario.png"), size)
+
+G = 0.01
+SIZE = (40, 60)
+
+Mario = pygame.transform.scale(pygame.image.load("mario.png"), SIZE)
 Mariobox = Mario.get_rect()
 
 stairs = [
@@ -63,61 +65,62 @@ while running is True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
-    def plat(x):
-        return [
-                (x, (-30/800) * x + 770), (x, (17/347) * x + 618), (x, (-14/347) * x + 535), (x, (17/347) * x + 381), (x, (-14/347) * x + 297), (x, (19/400) * x + 144), (x, 159), (x, 99), (x, 69)
-                ]
+     
+    def y_min(x, plat):
+        p = list(platforms[plat])
+        y1 = 800
+        y2 = 800
+        x1 = p[0][0]
+        for a in range(len(p)):
+            if p[a][0] != x1:
+                x2 = p[a][0]
+        for i in p:
+            if i[0] == x1:
+                if i[1] < y1:
+                    y1 = i[1]
+            if i[0] == x2:
+                if i[1] < y2:
+                    y2 = i[1]
+        n = (y2 - y1) / (x2 - x1)
+        b = y1 - (n * x1)
+        return (n * x + b)
     
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
-        pygame.QUIT
+        running = False
     if keys[pygame.K_RIGHT]:
-        x += 1
+        x += 2
+        if jumptime == 0:
+            y = y_min(x, cplat) - SIZE[1]
     if keys[pygame.K_LEFT]:
-        x -= 1
+        x -= 2
+        if jumptime == 0:
+            y = y_min(x, cplat) - SIZE[1]
     if keys[pygame.K_SPACE]:
-        jumptime = 50
-        while jumptime != 0:
-            jumptime -= 1
-            y -= 0.1
-    
-    
-    while (x, y) in plat(x):
-        G = 0
-    y += G
+        if jumptime == 0 and y == y_min(x, cplat) - SIZE[1]:
+            jumptime = 50
+    print(y, y_min(x, cplat))
+    if y+SIZE[1] < y_min(x, cplat):
+        y += G
+
+    while jumptime != 0:
+        y -= 1
+        jumptime -= 1
     
     screen.fill((0, 0, 0))
-    pygame.draw.polygon(screen, blue, ((280, 632), (320, 634), (320, 760), (280, 760))) # Escada Broken 1
-    pygame.draw.polygon(screen, blue, ((640, 649), (680, 651), (680, 749), (640, 746))) # Escada 1
-    pygame.draw.polygon(screen, blue, ((120, 531), (160, 529), (160, 626), (120, 626))) # Escada 2
-    pygame.draw.polygon(screen, blue, ((340, 522), (380, 520), (380, 637), (340, 637))) # Escada 3
-    pygame.draw.polygon(screen, blue, ((240, 393), (280, 395), (280, 525), (240, 525))) # Escada Broken 2
-    pygame.draw.polygon(screen, blue, ((400, 401), (440, 403), (440, 519), (400, 519))) # Escada 4
-    pygame.draw.polygon(screen, blue, ((640, 412), (680, 414), (680, 509), (640, 509))) # Escada 5
-    pygame.draw.polygon(screen, blue, ((120, 294), (160, 291), (160, 389), (120, 389))) # Escada 6
-    pygame.draw.polygon(screen, blue, ((220, 290), (260, 287), (260, 394), (220, 394))) # Escada 7
-    pygame.draw.polygon(screen, blue, ((580, 274), (620, 272), (620, 411), (580, 411))) # Escada Broken 3
-    pygame.draw.polygon(screen, blue, ((640, 174), (680, 176), (680, 271), (640, 271))) # Escada 8
-    pygame.draw.polygon(screen, blue, ((320, 160), (360, 161), (360, 284), (320, 284))) # Escada Broken 4
-    pygame.draw.polygon(screen, blue, ((440, 69), (480, 69), (480, 167), (440, 167))) # Escada P
-    pygame.draw.polygon(screen, blue, ((240, 99), (280, 99), (280, 159), (240, 159))) # Escada Barris 1
-    pygame.draw.polygon(screen, blue, ((280, 99), (320, 99), (320, 159), (280, 159))) # Escada Barris 2
-    pygame.draw.polygon(screen, red, ((800, 740), (800, 770), (0, 800), (0, 770))) # Plataforma 1
-    pygame.draw.polygon(screen, red, ((26, 619), (720, 653), (720, 683), (26, 649))) # Plataforma 2
-    pygame.draw.polygon(screen, red, ((774, 504), (774, 534), (80, 562), (80, 532))) # Plataforma 3
-    pygame.draw.polygon(screen, red, ((26, 382), (720, 416), (720, 446), (26, 412))) # Plataforma 4
-    pygame.draw.polygon(screen, red, ((774, 266), (774, 296), (80, 325), (80, 295))) # Plataforma 5
-    pygame.draw.polygon(screen, red, ((320, 159), (720, 178), (720, 208), (320, 189))) # Plataforma 6 (parte inclinada)
-    pygame.draw.polygon(screen, red, ((26, 159), (320, 159), (320, 189), (26, 189))) # Plataforma 6 (parte plana)
-    pygame.draw.polygon(screen, red, ((320, 69), (480, 69), (480, 99), (320, 99))) # Plataforma Princesa
-    pygame.draw.polygon(screen, red, ((240, 99), (320, 99), (320, 129), (240, 129))) # Plataforma Barris
+    for s in stairs:
+        pygame.draw.polygon(screen, blue, s)
+    for sb in stairs_broken:
+        pygame.draw.polygon(screen, blue, sb)
+    for p in platforms:
+        pygame.draw.polygon(screen, red, p) 
+        
     pos = (x, y)
     screen.blit(Mario, pos)
     pygame.display.update()
     pygame.display.flip()
-    
-    
+
+
 pygame.quit()
 
 
@@ -127,12 +130,15 @@ pygame.quit()
 # Oil na segunda plat | Mario na terceira
 
 # Equações retas superiores das plataformas:
-# Plat 1 == (-30/800) * x + 770
-# Plat 2 == (17/347) * x + 618
-# Plat 3 == (-14/347) * x + 535
-# Plat 4 == (17/347) * x + 381
-# Plat 5 == (-14/347) * x + 297
-# Plat 6 inclinada == (19/400) * x + 144
-# Plat 6 plana == 159
-# Plat Princesa == 69
-# Plat Barris == 99
+# Plat 0 == (-30/800) * x + 770 ((800, 740), (800, 770), (0, 800), (0, 770))
+# Plat 1 == (17/347) * x + 618 ((26, 619), (720, 653), (720, 683), (26, 649))
+# Plat 2 == (-14/347) * x + 535 ((774, 504), (774, 534), (80, 562), (80, 532))
+# Plat 3 == (17/347) * x + 381 ((26, 382), (720, 416), (720, 446), (26, 412))
+# Plat 4 == (-14/347) * x + 297 ((774, 266), (774, 296), (80, 325), (80, 295))
+# Plat 5 inclinada == (19/400) * x + 144 ((320, 159), (720, 178), (720, 208), (320, 189))
+# Plat 6 plana == 159 ((26, 159), (320, 159), (320, 189), (26, 189))
+# Plat 7 Princesa == 69 ((320, 69), (480, 69), (480, 99), (320, 99))
+# Plat 8 Barris == 99 ((240, 99), (320, 99), (320, 129), (240, 129))
+
+#xi == 180
+#yi == 703
