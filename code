@@ -11,16 +11,16 @@ blue = (0, 0, 255)
 
 
 x = 180
-y = 50
+y = 703
 
-
-G = 0.2
+jumptime = 0
+G = 0.1
 
 size = (40, 60)
 Mario = pygame.transform.scale(pygame.image.load("mario.png"), size)
 Mariobox = Mario.get_rect()
 
-escadas = [
+stairs = [
     ((640, 649), (680, 651), (680, 749), (640, 746)),
     ((120, 531), (160, 529), (160, 626), (120, 626)),
     ((340, 522), (380, 520), (380, 637), (340, 637)),
@@ -32,7 +32,7 @@ escadas = [
     ((440, 69), (480, 69), (480, 167), (440, 167))
 ]
 
-escadas_broken = [
+stairs_broken = [
     ((280, 632), (320, 634), (320, 760), (280, 760)),
     ((240, 393), (280, 395), (280, 525), (240, 525)),
     ((580, 274), (620, 272), (620, 411), (580, 411)),
@@ -58,6 +58,8 @@ running = True
 clock = pygame.time.Clock()
 
 while running is True:
+    dt = clock.tick(30)
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -71,11 +73,16 @@ while running is True:
     if keys[pygame.K_q]:
         pygame.QUIT
     if keys[pygame.K_RIGHT]:
-        x += 0.3
+        x += 1
     if keys[pygame.K_LEFT]:
-        x -= 0.3
-        
-           
+        x -= 1
+    if keys[pygame.K_SPACE]:
+        jumptime = 50
+        while jumptime != 0:
+            jumptime -= 1
+            y -= 0.1
+    
+    
     while (x, y) in plat(x):
         G = 0
     y += G
