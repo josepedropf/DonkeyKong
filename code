@@ -89,13 +89,15 @@ while running is True:
     if keys[pygame.K_q]:
         running = False
     if keys[pygame.K_RIGHT]:
-        x += 2
+        x += 4
         if jumptime == 0:
             y = y_min(x, cplat) - SIZE[1]
     if keys[pygame.K_LEFT]:
-        x -= 2
+        x -= 4
         if jumptime == 0:
             y = y_min(x, cplat) - SIZE[1]
+        
+    
     if keys[pygame.K_SPACE]:
         if jumptime == 0 and y == y_min(x, cplat) - SIZE[1]:
             jumptime = 50
@@ -103,9 +105,9 @@ while running is True:
     if y+SIZE[1] < y_min(x, cplat):
         y += G
 
-    while jumptime != 0:
-        y -= 1
-        jumptime -= 1
+    if jumptime != 0:
+        y -= 5
+        jumptime -= 10
     
     screen.fill((0, 0, 0))
     for s in stairs:
