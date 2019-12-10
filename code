@@ -11,27 +11,28 @@ blue = (0, 0, 255)
 
 
 x = 180
-y = 703
+y = 702
 cplat = 0
 jumptime = 0
+climbing = False
 
 
-G = 0.01
+G = 5
 SIZE = (40, 60)
 
 Mario = pygame.transform.scale(pygame.image.load("mario.png"), SIZE)
 Mariobox = Mario.get_rect()
 
 stairs = [
-    ((640, 649), (680, 651), (680, 749), (640, 746)),
-    ((120, 531), (160, 529), (160, 626), (120, 626)),
-    ((340, 522), (380, 520), (380, 637), (340, 637)),
-    ((400, 401), (440, 403), (440, 519), (400, 519)),
-    ((640, 412), (680, 414), (680, 509), (640, 509)),
-    ((120, 294), (160, 291), (160, 389), (120, 389)),
-    ((220, 290), (260, 287), (260, 394), (220, 394)),
-    ((640, 174), (680, 176), (680, 271), (640, 271)),
-    ((440, 69), (480, 69), (480, 167), (440, 167))
+    (0, ((640, 649), (680, 651), (680, 749), (640, 746))),
+    (1, ((120, 531), (160, 529), (160, 626), (120, 626))),
+    (1, ((340, 522), (380, 520), (380, 637), (340, 637))),
+    (2, ((400, 401), (440, 403), (440, 519), (400, 519))),
+    (2, ((640, 412), (680, 414), (680, 509), (640, 509))),
+    (3, ((120, 294), (160, 291), (160, 389), (120, 389))),
+    (3, ((220, 290), (260, 287), (260, 394), (220, 394))),
+    (4, ((640, 174), (680, 176), (680, 271), (640, 271))),
+    (5, ((440, 69), (480, 69), (480, 167), (440, 167)))
 ]
 
 stairs_broken = [
@@ -85,33 +86,73 @@ while running is True:
         b = y1 - (n * x1)
         return (n * x + b)
     
+    def inst(x, plat):
+        stairs_plat = []
+        for s in stairs:
+            if s[0] == plat:
+                stairs_plat.append(s[1])
+        for ss in stairs_plat:
+            if x + (SIZE[0] / 2) in range(ss[0][0], ss[1][0]):
+                return True
+        return False
+    
+    def inplat(x, plat):
+        xmin = 800
+        xmax = 0
+        for atuple in platforms[plat]:
+            if atuple[0] < xmin:
+                xmin = atuple[0]
+            if atuple[0] > xmax:
+                xmax = atuple[0]
+        print(xmin, xmax, x)
+        if x in range(xmin - 40, xmax):
+            return True
+        else:
+            return False
+        
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
         running = False
+        
     if keys[pygame.K_RIGHT]:
         x += 4
         if jumptime == 0:
-            y = y_min(x, cplat) - SIZE[1]
+            y = min(y, y_min(x, cplat) - SIZE[1])
     if keys[pygame.K_LEFT]:
         x -= 4
         if jumptime == 0:
-            y = y_min(x, cplat) - SIZE[1]
-        
-    
-    if keys[pygame.K_SPACE]:
-        if jumptime == 0 and y == y_min(x, cplat) - SIZE[1]:
-            jumptime = 50
-    print(y, y_min(x, cplat))
-    if y+SIZE[1] < y_min(x, cplat):
-        y += G
+            y = min(y, y_min(x, cplat) - SIZE[1])
 
+    if keys[pygame.K_SPACE]:
+        if y == y_min(x, cplat) - SIZE[1]:
+            jumptime = 5
+    if y < y_min(x, cplat) - SIZE[1] and jumptime == 0 and climbing == False:
+        y += G
+      
+    if inplat(x, cplat) == False:
+        cplat -= 1
+    
+    if inst(x, cplat) == True:
+        if keys[pygame.K_DOWN]:
+            y += 4
+        if keys[pygame.K_UP]:
+            climbing = True
+            y -= 4
+        if y < y_min(x, cplat + 1) - SIZE[1]:
+            cplat += 1
+            climbing = False
+    
+    if y == y_min(x, cplat) - SIZE[1] or inst(x, cplat) == False:
+        climbing = False
+    
     if jumptime != 0:
-        y -= 5
-        jumptime -= 10
+        y -= G
+        jumptime -= 1
     
     screen.fill((0, 0, 0))
     for s in stairs:
-        pygame.draw.polygon(screen, blue, s)
+        pygame.draw.polygon(screen, blue, s[1])
     for sb in stairs_broken:
         pygame.draw.polygon(screen, blue, sb)
     for p in platforms:
