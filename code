@@ -61,7 +61,7 @@ running = True
 clock = pygame.time.Clock()
 
 while running is True:
-    dt = clock.tick(30)
+    dt = clock.tick(30) 
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -123,15 +123,16 @@ while running is True:
         running = False
         
     if keys[pygame.K_RIGHT]:
-        x += 4
+        if x < 760:
+            x += 4
         if plat_up == True: 
             y = min(y, y_min(x, cplat) - SIZE[1])
     
     if keys[pygame.K_LEFT]:
-        x -= 4
+        if x > 0:
+            x -= 4
         if plat_up == False: 
             y = min(y, y_min(x, cplat) - SIZE[1])
-        
         
     if keys[pygame.K_SPACE]:
         if y == y_min(x, cplat) - SIZE[1]:
@@ -186,7 +187,7 @@ while running is True:
 
 pygame.quit()
 
-
+"""
 # Mario == 60p (altura) * 40p (largura) | Barril == 40p |
 # Plataforma_largura == 30p | Plataforma_comp == 80p | Mini_plat == 54p (-26p)
 # d_curta_plat == 60p | d_longa_plat == 120p
@@ -205,3 +206,4 @@ pygame.quit()
 
 #xi == 180
 #yi == 703
+"""
