@@ -51,8 +51,8 @@ platforms = [
     ((26, 382), (720, 416), (720, 446), (26, 412)),
     ((774, 266), (774, 296), (80, 325), (80, 295)),
     ((320, 159), (720, 178), (720, 208), (320, 189)),
-    ((26, 159), (320, 159), (320, 189), (26, 189)),
     ((320, 69), (480, 69), (480, 99), (320, 99)),
+    ((26, 159), (320, 159), (320, 189), (26, 189)),
     ((240, 99), (320, 99), (320, 129), (240, 129))
 ]
 
@@ -86,13 +86,21 @@ while running is True:
         b = y1 - (n * x1)
         return (n * x + b)
     
+    def plat_inc(plat):
+        if plat % 2 == 0:
+            return True
+        else:
+            return False
+   
+    plat_up = plat_inc(cplat)
+    
     def inst(x, plat):
         stairs_plat = []
         for s in stairs:
             if s[0] == plat:
                 stairs_plat.append(s[1])
         for ss in stairs_plat:
-            if x + (SIZE[0] / 2) in range(ss[0][0], ss[1][0]):
+            if x + (SIZE[0] / 2) in range(ss[0][0], ss[1][0]) and y <= y_min(x, cplat) - SIZE[1]:
                 return True
         return False
     
@@ -104,33 +112,43 @@ while running is True:
                 xmin = atuple[0]
             if atuple[0] > xmax:
                 xmax = atuple[0]
-        print(xmin, xmax, x)
         if x in range(xmin - 40, xmax):
             return True
         else:
             return False
-        
-
+      
+    print(y, y_min(x, cplat) - SIZE[1])
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
         running = False
         
     if keys[pygame.K_RIGHT]:
         x += 4
-        if jumptime == 0:
+        if plat_up == True: 
             y = min(y, y_min(x, cplat) - SIZE[1])
+    
     if keys[pygame.K_LEFT]:
         x -= 4
-        if jumptime == 0:
+        if plat_up == False: 
             y = min(y, y_min(x, cplat) - SIZE[1])
-
+        
+        
     if keys[pygame.K_SPACE]:
         if y == y_min(x, cplat) - SIZE[1]:
             jumptime = 5
+            
+    if jumptime != 0:
+        y -= G
+        jumptime -= 1
+        
     if y < y_min(x, cplat) - SIZE[1] and jumptime == 0 and climbing == False:
         y += G
+
+    if jumptime == 0:
+        y = min(y, y_min(x, cplat) - SIZE[1])
       
-    if inplat(x, cplat) == False:
+        
+    if inplat(x, cplat) == False and y == y_min(x, cplat) - SIZE[1]:
         cplat -= 1
     
     if inst(x, cplat) == True:
@@ -143,12 +161,14 @@ while running is True:
             cplat += 1
             climbing = False
     
+    if inst(x, cplat - 1) == True and keys[pygame.K_DOWN]:
+        cplat -= 1
+        climbing = True
+    
     if y == y_min(x, cplat) - SIZE[1] or inst(x, cplat) == False:
         climbing = False
     
-    if jumptime != 0:
-        y -= G
-        jumptime -= 1
+   
     
     screen.fill((0, 0, 0))
     for s in stairs:
@@ -179,8 +199,8 @@ pygame.quit()
 # Plat 3 == (17/347) * x + 381 ((26, 382), (720, 416), (720, 446), (26, 412))
 # Plat 4 == (-14/347) * x + 297 ((774, 266), (774, 296), (80, 325), (80, 295))
 # Plat 5 inclinada == (19/400) * x + 144 ((320, 159), (720, 178), (720, 208), (320, 189))
-# Plat 6 plana == 159 ((26, 159), (320, 159), (320, 189), (26, 189))
-# Plat 7 Princesa == 69 ((320, 69), (480, 69), (480, 99), (320, 99))
+# Plat 6 Princesa == 69 ((320, 69), (480, 69), (480, 99), (320, 99))
+# Plat 7 plana == 159 ((26, 159), (320, 159), (320, 189), (26, 189))
 # Plat 8 Barris == 99 ((240, 99), (320, 99), (320, 129), (240, 129))
 
 #xi == 180
