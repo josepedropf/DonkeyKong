@@ -5,23 +5,24 @@ pygame.init()
 
 screen = pygame.display.set_mode((800, 800))
 
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-
-
 x = 180
 y = 702
+barris = [[500, 100, 5]]
+#xb = 500
+#yb = 100
 cplat = 0
 jumptime = 0
 climbing = False
+tempo_ultimo_barril = pygame.time.get_ticks()
 
-
+R = 15
 G = 5
 SIZE = (40, 60)
+A_BARREL = (math.pi ** 2) * R
 
 Mario = pygame.transform.scale(pygame.image.load("mario.png"), SIZE)
 Mariobox = Mario.get_rect()
+
 
 stairs = [
     (0, ((640, 649), (680, 651), (680, 749), (640, 746))),
@@ -66,6 +67,9 @@ while running is True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
+    def colbarrel(x, y, xb, yb):
+        return (x - xb) ** 2 + ((800 - y) - (800 - yb)) ** 2 <= R ** 2 
      
     def y_min(x, plat):
         p = list(platforms[plat])
@@ -86,14 +90,6 @@ while running is True:
         b = y1 - (n * x1)
         return (n * x + b)
     
-    def plat_inc(plat):
-        if plat % 2 == 0:
-            return True
-        else:
-            return False
-   
-    plat_up = plat_inc(cplat)
-    
     def inst(x, plat):
         stairs_plat = []
         for s in stairs:
@@ -104,7 +100,7 @@ while running is True:
                 return True
         return False
     
-    def inplat(x, plat):
+    def inplat(x, plat, c):
         xmin = 800
         xmax = 0
         for atuple in platforms[plat]:
@@ -112,46 +108,44 @@ while running is True:
                 xmin = atuple[0]
             if atuple[0] > xmax:
                 xmax = atuple[0]
-        if x in range(xmin - 40, xmax):
-            return True
-        else:
-            return False
+        return x in range(xmin - c, xmax)
       
-    print(y, y_min(x, cplat) - SIZE[1])
+    if inplat(x, cplat, 40) == False and y == y_min(x, cplat) - SIZE[1]:
+        cplat -= 1
+        
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
         running = False
         
-    if keys[pygame.K_RIGHT]:
-        if x < 760:
-            x += 4
-        if plat_up == True: 
-            y = min(y, y_min(x, cplat) - SIZE[1])
-    
-    if keys[pygame.K_LEFT]:
-        if x > 0:
-            x -= 4
-        if plat_up == False: 
-            y = min(y, y_min(x, cplat) - SIZE[1])
-        
+    if inst(x, cplat - 1) == True and keys[pygame.K_DOWN]:
+        cplat -= 1
+        climbing = True
+
     if keys[pygame.K_SPACE]:
         if y == y_min(x, cplat) - SIZE[1]:
             jumptime = 5
             
+    if keys[pygame.K_RIGHT]:
+        if x < 760:
+            x += 4
+    
+    if keys[pygame.K_LEFT]:
+        if x > 0:
+            x -= 4
+            
     if jumptime != 0:
         y -= G
         jumptime -= 1
+
         
-    if y < y_min(x, cplat) - SIZE[1] and jumptime == 0 and climbing == False:
+    if jumptime == 0 and climbing == False:
         y += G
+        if y > y_min(x, cplat) - SIZE[1]:
+            y = y_min(x, cplat) - SIZE[1]
 
     if jumptime == 0:
         y = min(y, y_min(x, cplat) - SIZE[1])
-      
-        
-    if inplat(x, cplat) == False and y == y_min(x, cplat) - SIZE[1]:
-        cplat -= 1
-    
+            
     if inst(x, cplat) == True:
         if keys[pygame.K_DOWN]:
             y += 4
@@ -162,33 +156,46 @@ while running is True:
             cplat += 1
             climbing = False
     
-    if inst(x, cplat - 1) == True and keys[pygame.K_DOWN]:
-        cplat -= 1
-        climbing = True
-    
     if y == y_min(x, cplat) - SIZE[1] or inst(x, cplat) == False:
         climbing = False
     
-   
-    
     screen.fill((0, 0, 0))
     for s in stairs:
-        pygame.draw.polygon(screen, blue, s[1])
+        pygame.draw.polygon(screen, pygame.Color('blue'), s[1])
     for sb in stairs_broken:
-        pygame.draw.polygon(screen, blue, sb)
+        pygame.draw.polygon(screen, pygame.Color('brown'), sb)
     for p in platforms:
-        pygame.draw.polygon(screen, red, p) 
-        
+        pygame.draw.polygon(screen, pygame.Color('red'), p)
+    
+    for barril in barris:
+        if inplat(barril[0], barril[2], 15) == True:
+            if barril[1] + 15 < y_min(barril[0], barril[2]):
+                barril[1] += G
+            else:
+                if barril[2] % 2 == 0:
+                    barril[0] -= 2
+                else:
+                    barril[0] += 2
+        else:
+            barril[2] -= 1
+    
+    
+    if pygame.time.get_ticks() - tempo_ultimo_barril > 5000:
+        barris.append([500, 100, 5])
+        tempo_ultimo_barril = pygame.time.get_ticks()
+    
+    for barril in barris:
+        pygame.draw.circle(screen, pygame.Color('green'), barril[:2], 15)
     pos = (x, y)
     screen.blit(Mario, pos)
     pygame.display.update()
     pygame.display.flip()
-
-
+    
+    
 pygame.quit()
 
 """
-# Mario == 60p (altura) * 40p (largura) | Barril == 40p |
+# Mario == 60p (altura) * 40p (largura) | Barril == 30p |
 # Plataforma_largura == 30p | Plataforma_comp == 80p | Mini_plat == 54p (-26p)
 # d_curta_plat == 60p | d_longa_plat == 120p
 # Oil na segunda plat | Mario na terceira
