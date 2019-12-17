@@ -13,11 +13,12 @@ cplat = 0
 jumptime = 0
 climbing = False
 lost_life = False
+win = False
 time_last_barrel = pygame.time.get_ticks()
 
-R = 15
+R = 12
 G = 5
-LB = math.sqrt(450)
+LB = math.sqrt(2 * (R ** 2))
 SIZE = (40, 60)
 A_BARREL = (math.pi ** 2) * R
 
@@ -71,8 +72,10 @@ while running is True:
         pygame.time.wait(1000)
         pygame.time.wait(1000)
         lost_life = False
+    if win:
+        barrels = []
         
-    
+        
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -119,7 +122,7 @@ while running is True:
     if inplat(x, cplat, 40) == False and y == y_min(x, cplat) - SIZE[1]:
         cplat -= 1
         
-    if not lost_life:
+    if not lost_life and not win:
         keys = pygame.key.get_pressed() 
     if keys[pygame.K_q]:
         running = False
@@ -130,7 +133,7 @@ while running is True:
 
     if keys[pygame.K_SPACE]:
         if y == y_min(x, cplat) - SIZE[1]:
-            jumptime = 5
+            jumptime = 10
        
     if keys[pygame.K_RIGHT]:
         if x < 760:
@@ -166,8 +169,8 @@ while running is True:
         climbing = False
         
     for barrel in barrels:
-        if inplat(barrel[0], barrel[2], 15) == True:
-            if barrel[1] + 15 < y_min(barrel[0], barrel[2]):
+        if inplat(barrel[0], barrel[2], R) == True:
+            if barrel[1] + R < y_min(barrel[0], barrel[2]):
                 barrel[1] += G
             else:
                 if barrel[2] % 2 == 0:
@@ -192,13 +195,17 @@ while running is True:
         pygame.draw.polygon(screen, pygame.Color('red'), p)
 
     for barrel in barrels:
-        pygame.draw.circle(screen, pygame.Color('green'), barrel[:2], 15)
+        pygame.draw.circle(screen, pygame.Color('green'), barrel[:2], R)
     pos = (x, y)
+    
     Mariobox = pygame.Rect(pos, SIZE)
     for barrel in barrels:
         box = pygame.Rect(barrel[0] - (LB / 2), barrel[1] - (LB / 2), LB, LB)
         if Mariobox.colliderect(box):
             lost_life = True
+        
+    if cplat == 6:
+        win = True
     screen.blit(Mario, pos)
     pygame.display.update()
     pygame.display.flip()
