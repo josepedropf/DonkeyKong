@@ -7,21 +7,21 @@ screen = pygame.display.set_mode((800, 800))
 
 x = 180
 y = 702
-barris = [[500, 100, 5]]
-#xb = 500
-#yb = 100
+barrels = [[500, 100, 5]]
+Barrelbox = []
+
 cplat = 0
 jumptime = 0
 climbing = False
-tempo_ultimo_barril = pygame.time.get_ticks()
+time_last_barrel = pygame.time.get_ticks()
 
 R = 15
 G = 5
+LB = math.sqrt(450)
 SIZE = (40, 60)
 A_BARREL = (math.pi ** 2) * R
 
 Mario = pygame.transform.scale(pygame.image.load("mario.png"), SIZE)
-Mariobox = Mario.get_rect()
 
 
 stairs = [
@@ -167,30 +167,40 @@ while running is True:
     for p in platforms:
         pygame.draw.polygon(screen, pygame.Color('red'), p)
     
-    for barril in barris:
-        if inplat(barril[0], barril[2], 15) == True:
-            if barril[1] + 15 < y_min(barril[0], barril[2]):
-                barril[1] += G
+    for barrel in barrels:
+        if inplat(barrel[0], barrel[2], 15) == True:
+            if barrel[1] + 15 < y_min(barrel[0], barrel[2]):
+                barrel[1] += G
             else:
-                if barril[2] % 2 == 0:
-                    barril[0] -= 2
+                if barrel[2] % 2 == 0:
+                    barrel[0] -= 2
                 else:
-                    barril[0] += 2
+                    barrel[0] += 2
         else:
-            barril[2] -= 1
+            barrel[2] -= 1
     
     
-    if pygame.time.get_ticks() - tempo_ultimo_barril > 5000:
-        barris.append([500, 100, 5])
-        tempo_ultimo_barril = pygame.time.get_ticks()
+    if pygame.time.get_ticks() - time_last_barrel > 5000:
+        barrels.append([500, 100, 5])
+        time_last_barrel = pygame.time.get_ticks()
     
-    for barril in barris:
-        pygame.draw.circle(screen, pygame.Color('green'), barril[:2], 15)
+    for barrel in barrels:
+        pygame.draw.circle(screen, pygame.Color('green'), barrel[:2], 15)
+        if barrel[2] == 1 and x <= 0:
+            barrels.pop(barrel)
+    for barrel in barrels:
+        Barrelbox.append(pygame.Rect((barrel[0] - (LB / 2), barrel[1] - (LB / 2)), (LB, LB)))
     pos = (x, y)
+    Mbox = pygame.Rect(pos, SIZE)
+    Mariobox = Mario.get_rect()
+    print(Barrelbox)
+    for barrelbox in Barrelbox:
+        if Mariobox.colliderect(barrelbox) is True:
+            print("cccccccccccccccccccccccccccCCCCCCCCCCCCCCCCCCCCCCCCCcccccccccccccccccc")
     screen.blit(Mario, pos)
     pygame.display.update()
     pygame.display.flip()
-    
+    pygame
     
 pygame.quit()
 
