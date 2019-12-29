@@ -68,6 +68,8 @@ while running is True:
     dt = clock.tick(30) 
     
     Mario = pygame.transform.scale(pygame.image.load(sprt), SIZE)
+    last_sprt = sprt
+    
     if lost_life:
         barrels = []
         x = 180
@@ -157,34 +159,36 @@ while running is True:
             
     if y < y_min(x, cplat) - SIZE[1] and climbing == False:
         if keys[pygame.K_LEFT]:
-            last_sprt = sprt
             sprt = sprites[5]
-        else:
-            last_sprt = sprt
+        elif keys[pygame.K_RIGHT]:
             sprt = sprites[2]
+        else:
+            if last_sprt == sprites[0] or last_sprt == sprites[1]:
+                sprt = sprites[2]
+            if last_sprt == sprites[3] or last_sprt == sprites[4]:
+                sprt = sprites[5]
                          
     if y == y_min(x, cplat) - SIZE[1] and climbing == False:
         if keys[pygame.K_RIGHT]:
             if last_sprt == sprites[1]:
-                last_sprt = sprt
-                sprt = sprites[0]
+                if pygame.time.get_ticks() - anim_time > 100:
+                    sprt = sprites[0]
             else:
-                last_sprt = sprt
                 sprt = sprites[1]
         elif keys[pygame.K_LEFT]:
             if last_sprt == sprites[4]:
-                last_sprt = sprt
-                sprt = sprites[3]
+                if pygame.time.get_ticks() - anim_time > 100:
+                    sprt = sprites[3]
             else:
-                last_sprt = sprt
                 sprt = sprites[4]
         else:
             if last_sprt == sprites[5]:
-                last_sprt = sprt
                 sprt = sprites[4]
             if last_sprt == sprites[2]:
-                last_sprt = sprt
                 sprt = sprites[1]
+                
+    if last_sprt != sprt:
+        anim_time = pygame.time.get_ticks()
            
     if jumptime == 0:
         y = min(y, y_min(x, cplat) - SIZE[1])
