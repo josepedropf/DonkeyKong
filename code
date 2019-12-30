@@ -18,6 +18,7 @@ climbing = False
 lost_life = False
 win = False
 time_last_barrel = pygame.time.get_ticks()
+anim_time = pygame.time.get_ticks()
 
 R = 12
 G = 5
