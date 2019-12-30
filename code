@@ -23,11 +23,14 @@ sprites = [
     "mariostend.png",
     "mariostendrev.png",
     "dk.png",
-    "dkb.png"
+    "dkb.png",
+    "phelp.png",
+    "plove.png"
 ]
 
 sprt = sprites[1]
 dk_sprt = sprites[11]
+p_sprt = sprites[13]
 last_sprt = sprites[0]
 cplat = 0
 jumptime = 0
@@ -44,6 +47,8 @@ SIZE = (30, 45)
 A_BARREL = (math.pi ** 2) * R
 DK_SIZE = (150, 110)
 DK_POS = (240 - DK_SIZE[0], 159 - DK_SIZE[1])
+P_SIZE = (80, 60)
+P_POS = (320, 69 - P_SIZE[1])
 
 
 stairs = [
@@ -88,6 +93,7 @@ while running is True:
     
     Mario = pygame.transform.scale(pygame.image.load(sprt), SIZE)
     Dk = pygame.transform.scale(pygame.image.load(dk_sprt), DK_SIZE)
+    Princess = pygame.transform.scale(pygame.image.load(p_sprt), P_SIZE)
     last_sprt = sprt
     
     if lost_life:
@@ -279,7 +285,7 @@ while running is True:
         if barrel[2] == 0 and barrel[0] <= 20:
             barrels.remove(barrel)
     
-    if pygame.time.get_ticks() - time_last_barrel > 5000:
+    if pygame.time.get_ticks() - time_last_barrel > 5000 and win is False:
         barrels.append([xb, yb, 5])
         time_last_barrel = pygame.time.get_ticks()
     if pygame.time.get_ticks() - time_last_barrel > 4800 or pygame.time.get_ticks() - time_last_barrel < 200:
@@ -307,8 +313,16 @@ while running is True:
         
     if cplat == 6:
         win = True
+    
+    if win is True:
+        p_sprt = sprites[14]
+        screen.blit(pygame.transform.rotate( pygame.transform.scale(pygame.image.load(sprites[11]), DK_SIZE), 180), (DK_POS[0], 680))
+        sprt = sprites[4]
     screen.blit(Mario, pos)
-    screen.blit(Dk, DK_POS)
+    if win is False:
+        p_sprt = sprites[13]
+        screen.blit(Dk, DK_POS)
+    screen.blit(Princess, P_POS)
     pygame.display.update()
     pygame.display.flip()
     
