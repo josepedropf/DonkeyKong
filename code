@@ -7,9 +7,9 @@ screen = pygame.display.set_mode((800, 800))
 
 x = 180
 y = 702
-xb = 320
+xb = 240
 yb = 159
-barrels = [[xb, yb, 5]]
+barrels = [[xb, yb, 7]]
 sprites = [
     "mario.png",
     "marion.png",
@@ -25,7 +25,8 @@ sprites = [
     "dk.png",
     "dkb.png",
     "phelp.png",
-    "plove.png"
+    "plove.png",
+    "marioll.png"
 ]
 
 sprt = sprites[1]
@@ -36,19 +37,26 @@ cplat = 0
 jumptime = 0
 climbing = False
 lost_life = False
+ll_anim = False
 win = False
 time_last_barrel = pygame.time.get_ticks()
 anim_time = pygame.time.get_ticks()
+font = pygame.font.SysFont("comicsans", 30, True)
+score = 0
+lives = 3
 
 R = 12
 G = 5
 LB = math.sqrt(2 * (R ** 2))
 SIZE = (30, 45)
-A_BARREL = (math.pi ** 2) * R
+A_BARREL = (math.pi) * (R ** 2)
+VM = 4
+VB = 3
 DK_SIZE = (150, 110)
 DK_POS = (240 - DK_SIZE[0], 159 - DK_SIZE[1])
 P_SIZE = (80, 60)
 P_POS = (320, 69 - P_SIZE[1])
+SCORE_POS = (600, 10)
 
 
 stairs = [
@@ -64,12 +72,12 @@ stairs = [
 ]
 
 stairs_broken = [
-    ((280, 632), (320, 634), (320, 760), (280, 760)),
-    ((240, 393), (280, 395), (280, 525), (240, 525)),
-    ((580, 274), (620, 272), (620, 411), (580, 411)),
-    ((320, 160), (360, 161), (360, 284), (320, 284)),
-    ((240, 99), (280, 99), (280, 159), (240, 159)),
-    ((280, 99), (320, 99), (320, 159), (280, 159))
+    (0, ((280, 632), (320, 634), (320, 760), (280, 760))),
+    (2, ((240, 393), (280, 395), (280, 525), (240, 525))),
+    (3, ((580, 274), (620, 272), (620, 411), (580, 411))),
+    (4, ((320, 160), (360, 161), (360, 284), (320, 284))),
+    (5, ((240, 99), (280, 99), (280, 159), (240, 159))),
+    (5, ((280, 99), (320, 99), (320, 159), (280, 159)))
 ]
 
 platforms = [
@@ -90,24 +98,37 @@ clock = pygame.time.Clock()
 
 while running is True:
     dt = clock.tick(30)
-    
+
     Mario = pygame.transform.scale(pygame.image.load(sprt), SIZE)
+    Mario_lostlife = pygame.transform.scale(pygame.image.load(sprites[15]), SIZE)
     Dk = pygame.transform.scale(pygame.image.load(dk_sprt), DK_SIZE)
     Princess = pygame.transform.scale(pygame.image.load(p_sprt), P_SIZE)
     last_sprt = sprt
-    
+    pos = (x, y)
+
     if lost_life:
         barrels = []
+        while y < 799:
+            screen.fill((0, 0, 0))
+            draw_screen(stairs, stairs_broken, platforms)
+            screen.blit(Mario_lostlife, (x, y))
+            screen.blit(Princess, P_POS)
+            screen.blit(Dk, DK_POS)
+            screen.blit(text_score, SCORE_POS)
+            pygame.display.update()
+            pygame.display.flip()
+            y += 10
+            print(y)
         x = 180
         y = 702
         cplat = 0
         sprt = sprites[1]
-        pygame.time.wait(1000)
-        pygame.time.wait(1000)
+        pygame.time.wait(2000)
         lost_life = False
+        
     if win:
         barrels = []
-        
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -131,13 +152,23 @@ while running is True:
         b = y1 - (n * x1)
         return (n * x + b)
     
-    def inst(x, plat):
+    def inst(x, y, plat, size):
         stairs_plat = []
         for s in stairs:
             if s[0] == plat:
                 stairs_plat.append(s[1])
         for ss in stairs_plat:
-            if x + (SIZE[0] / 2) in range(ss[0][0], ss[1][0]) and y <= y_min(x, cplat) - SIZE[1]:
+            if x + (size[0] / 2) in range(ss[0][0], ss[1][0]) and y <= y_min(x, cplat) - size[1]:
+                return True
+        return False
+    
+    def inbst(x, y, plat, size):
+        bstairs_plat = []
+        for sb in stairs_broken:
+            if sb[0] == plat:
+                bstairs_plat.append(sb[1])
+        for ssb in bstairs_plat:
+            if x + (size[0] / 2) in range(ssb[0][0], ssb[1][0]) and y <= y_min(x, cplat) - size[1]:
                 return True
         return False
     
@@ -155,9 +186,9 @@ while running is True:
         cplat -= 1
         
     if not lost_life and not win:
-        keys = pygame.key.get_pressed() 
+        keys = pygame.key.get_pressed()
         
-    if inst(x, cplat - 1) is True and keys[pygame.K_DOWN]:
+    if inst(x, y, cplat - 1, SIZE) is True and keys[pygame.K_DOWN]:
         cplat -= 1
         climbing = True
         
@@ -170,11 +201,15 @@ while running is True:
        
     if keys[pygame.K_RIGHT]:
         if x < 760 and climbing is False:
-            x += 4
+            x += VM
     
     if keys[pygame.K_LEFT]:
-        if x > 0 and climbing is False:
-            x -= 4
+        if cplat < 5:
+            if x > 0 and climbing is False:
+                x -= VM
+        else:
+            if x > 320 and climbing is False:
+                x -= VM
             
     if jumptime != 0:
         y -= G
@@ -251,7 +286,7 @@ while running is True:
     if jumptime == 0:
         y = min(y, y_min(x, cplat) - SIZE[1])
             
-    if inst(x, cplat) is True:
+    if inst(x, y, cplat, SIZE) is True:
         if y == y_min(x, cplat) - SIZE[1] and keys[pygame.K_UP]:
             climbing = True
         if climbing is True:
@@ -261,15 +296,20 @@ while running is True:
                 y -= 4
         if y < y_min(x, cplat + 1) - SIZE[1]:
             cplat += 1
+            score += 200
             climbing = False
             sprt = sprites[6]
     
-    if y == y_min(x, cplat) - SIZE[1] or inst(x, cplat) is False:
+    if y == y_min(x, cplat) - SIZE[1] or inst(x, y, cplat, SIZE) is False:
         climbing = False
     
-    if inst(x, cplat) is True and climbing is False:
+    if inst(x, y, cplat, SIZE) is True and climbing is False:
         if last_sprt == sprites[7] or last_sprt == sprites[8]:
             sprt = sprites[6]
+    
+    for barrel in barrels:
+        if barrel[2] == 7 and barrel[0] == 321:
+            barrel[2] -= 2
         
     for barrel in barrels:
         if inplat(barrel[0], barrel[2], R) is True:
@@ -277,55 +317,84 @@ while running is True:
                 barrel[1] += G
             else:
                 if barrel[2] % 2 == 0:
-                    barrel[0] -= 2
+                    barrel[0] -= VB
                 else:
-                    barrel[0] += 2
+                    barrel[0] += VB
         else:
             barrel[2] -= 1
-        if barrel[2] == 0 and barrel[0] <= 20:
+        if barrel[2] == 0 and barrel[0] <= R:
             barrels.remove(barrel)
-    
+        if barrel[2] == cplat and climbing is False:
+            if lost_life is False and x + (SIZE[0] / 2) in range(barrel[0] - 2, barrel[0] + 2) and y + (SIZE[1] / 2) < barrel[1]:
+                score += 100
+
     if pygame.time.get_ticks() - time_last_barrel > 5000 and win is False:
-        barrels.append([xb, yb, 5])
+        barrels.append([xb, yb, 7])
         time_last_barrel = pygame.time.get_ticks()
     if pygame.time.get_ticks() - time_last_barrel > 4800 or pygame.time.get_ticks() - time_last_barrel < 200:
         dk_sprt = sprites[12]
     else:
         dk_sprt = sprites[11]
     
-    screen.fill((0, 0, 0))
-    for s in stairs:
-        pygame.draw.polygon(screen, pygame.Color('blue'), s[1])
-    for sb in stairs_broken:
-        pygame.draw.polygon(screen, pygame.Color('brown'), sb)
-    for p in platforms:
-        pygame.draw.polygon(screen, pygame.Color('red'), p)
+    for barrel in barrels[1:]:
+        if barrel[2] > cplat:
+            if inst(barrel[0], barrel[1], barrel[2] - 1, (0, SIZE[1])) or inbst(barrel[0], barrel[1], barrel[2] - 1, (0, SIZE[1])):
+                barrel_x = [x[0] for x in barrels if x[2] == barrel[2] - 1]
+                for bx in barrel_x:
+                    if barrel[0] in range(bx - 50, bx + 50):
+                        pass
+                    else:
+                        if barrel[0] in range(x - 1, x + 1):
+                            barrel[2] -= 1
+                        if barrel[0] > x and keys[pygame.K_RIGHT]:
+                            barrel[2] -= 1
+                        if barrel[0] < x and keys[pygame.K_LEFT]:
+                            barrel[2] -= 1
 
+    screen.fill((0, 0, 0))
+ 
+    def draw_screen(stairs, stairs_broken, platforms):
+        for s in stairs:
+            pygame.draw.polygon(screen, pygame.Color('blue'), s[1])
+        for sb in stairs_broken:
+            pygame.draw.polygon(screen, pygame.Color('brown'), sb[1])
+        for p in platforms:
+            pygame.draw.polygon(screen, pygame.Color('red'), p)
+    draw_screen(stairs, stairs_broken, platforms)
     for barrel in barrels:
-        pygame.draw.circle(screen, pygame.Color('green'), barrel[:2], R)
-    pos = (x, y)
-    
+        if lost_life is False:
+            pygame.draw.circle(screen, pygame.Color('green'), barrel[:2], R)
+
+    text_score = font.render("Score: " + str(score), 1, pygame.Color('white'))
     Mariobox = pygame.Rect(pos, SIZE)
     for barrel in barrels:
         box = pygame.Rect(barrel[0] - (LB / 2), barrel[1] - (LB / 2), LB, LB)
         if Mariobox.colliderect(box):
             lost_life = True
-        
+
     if cplat == 6:
+        score += 1000
         win = True
     
     if win is True:
         p_sprt = sprites[14]
-        screen.blit(pygame.transform.rotate( pygame.transform.scale(pygame.image.load(sprites[11]), DK_SIZE), 180), (DK_POS[0], 680))
+        screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load(sprites[11]), DK_SIZE), 180), (DK_POS[0], 680))
         sprt = sprites[4]
-    screen.blit(Mario, pos)
+        
+    if lost_life is False:
+        screen.blit(Mario, pos)
+    
     if win is False:
         p_sprt = sprites[13]
         screen.blit(Dk, DK_POS)
+
     screen.blit(Princess, P_POS)
+    screen.blit(text_score, SCORE_POS)
     pygame.display.update()
     pygame.display.flip()
     
+del font 
+pygame.display.quit()
 pygame.quit()
 
 """
