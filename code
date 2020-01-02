@@ -141,10 +141,7 @@ while running is True:
         if mpos[0] in range(xbox, xbox + box_size[0]) and mpos[1] in range(pos[1], pos[1] + box_size[0]):
             return True
 
-    while menu is True:
-        if mouse_over(POS_CL) and click[0] == 1:
-            classic = True
-            menu = False
+    if menu is True:
         colors = ["yellow", "yellow", "yellow", "yellow"]
         draw_menu(colors)
         for post in positions:
@@ -153,6 +150,10 @@ while running is True:
                 colors[ind] = "blue"
             else:
                 colors[ind] = "yellow"
+        print(mouse_over(POS_CL))
+        if mouse_over(POS_CL) and click[0] == 1:
+            classic = True
+            menu = False
     
     if classic is True:
         def draw_screen(stairs, stairs_broken, platforms):
