@@ -5,10 +5,15 @@ pygame.init()
 
 screen = pygame.display.set_mode((800, 800))
 
-x = 180
-y = 702
 xb = 240
 yb = 159
+R = 12
+G = 5
+VM = 4
+TIME_B = 5000
+VB = 3
+lives = 3
+
 barrels = [[xb, yb, 7]]
 sprites = [
     "mario.png",
@@ -29,41 +34,6 @@ sprites = [
     "marioll.png",
     "marioh.png"
 ]
-
-sprt = sprites[1]
-dk_sprt = sprites[11]
-p_sprt = sprites[13]
-last_sprt = sprites[0]
-cplat = 0
-plat_max = 0
-jumptime = 0
-climbing = False
-lost_life = False
-ll_anim = False
-win = False
-win_menu = False
-gameover = False
-time_last_barrel = pygame.time.get_ticks()
-anim_time = pygame.time.get_ticks()
-font_g = pygame.font.SysFont("comicsans", 30, True)
-score = 0
-rscore = 0
-lives = 3
-
-R = 12
-G = 5
-LB = math.sqrt(2 * (R ** 2))
-SIZE = (30, 45)
-A_BARREL = (math.pi) * (R ** 2)
-VM = 4
-VB = 3
-DK_SIZE = (150, 110)
-DK_POS = [240 - DK_SIZE[0], 159 - DK_SIZE[1]]
-P_SIZE = (80, 60)
-P_POS = (320, 69 - P_SIZE[1])
-SCORE_POS = (600, 10)
-LIVES_POS = (600, 40)
-
 
 stairs = [
     (0, ((640, 649), (680, 651), (680, 749), (640, 746))),
@@ -98,8 +68,9 @@ platforms = [
     ((240, 99), (320, 99), (320, 129), (240, 129))
 ]
 
-
-
+remix_v = [[G, 1, 10], [R, 1, 24], [TIME_B, 1000, 10000], [VB, 1, 10], [VM, 1, 10], [lives, 1, 9]]
+stairs_remix = "Normal"
+font_g = pygame.font.SysFont("comicsans", 30, True)
 font_menu = pygame.font.SysFont("comicsans", 50, True)
 box_size = (180, 30)
 xbox = 400 - int(box_size[0] / 2)
@@ -128,9 +99,12 @@ def draw_menu(alist):
     pygame.display.flip()
 
 
-menu = True
-running = True
+intro = True
 classic = False
+menu = True
+play = False
+remix = False
+running = True
 clock = pygame.time.Clock()
 
 while running is True:
@@ -139,28 +113,144 @@ while running is True:
         if event.type == pygame.QUIT:
             running = False
 
-    def mouse_over(pos):
+    def mouse_over(xbox, box_size, pos):
         return mpos[0] in range(xbox, xbox + box_size[0]) and mpos[1] in range(pos[1], pos[1] + box_size[1])
 
     if menu is True:
+        win = False
+        intro = True
         mpos = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         colors = ["yellow", "yellow", "yellow", "yellow"]
         for p in positions:
             ind = positions.index(p)
-            if mouse_over(p) is True:
+            if mouse_over(xbox, box_size, p) is True:
                 colors[ind] = "blue"
             else:
                 colors[ind] = "yellow"
         draw_menu(colors)
-        if mouse_over(POS_CL) and click[0] == 1:
+        if mouse_over(xbox, box_size, POS_CL) and click[0] == 1:
             classic = True
+            play = True
             menu = False
-        if mouse_over(POS_QU) and click[0] == 1:
+        if mouse_over(xbox, box_size, POS_RE) and click[0] == 1:
+            remix = True
+            menu = False
+        if mouse_over(xbox, box_size, POS_QU) and click[0] == 1:
             menu = False
             running = False
 
-    if classic is True:
+    if remix is True:
+        mpos = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        remix_text_string = ["-", "+", "Gravity", "Barrel Size", "Barrel Time", "Barrel Velocity", "Mario Velocity", "Lives", "Stairs", "Play", "Back"]
+        y_remix = [125, 200, 275, 350, 425, 500, 575, 700]
+        remix_text_size = [font_menu.size(rtxt) for rtxt in remix_text_string]
+        remix_size_x = [sizetxt[0] for sizetxt in remix_text_size]
+        remix_size_y = remix_text_size[0][1]
+        r_text = [font_menu.render(remixtxt, 1, pygame.Color("yellow")) for remixtxt in remix_text_string[2:-1]]
+        r_box_size = (max(remix_size_x), remix_size_y)
+        r_box_x = 400 - int(r_box_size[0] / 2)
+        r_boxes = [pygame.Rect((r_box_x - 100, r_box_y), r_box_size) for r_box_y in y_remix[:-1]]
+        if mouse_over(460, (160, 35), (460, 575)) and click[0] == 1:
+            if stairs_remix == "Random":
+                stairs_remix = "Normal"
+            else:
+                stairs_remix = "Random"
+        screen.fill((0, 0, 0))
+        pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((400 - int(r_box_size[0] / 2), y_remix[-1]), r_box_size), 1)
+        if mouse_over(252, r_box_size, (200, y_remix[-1])):
+            screen.blit(font_menu.render(remix_text_string[-2], 1, pygame.Color("blue")), (360, y_remix[-1]))
+        else:
+            screen.blit(font_menu.render(remix_text_string[-2], 1, pygame.Color("yellow")), (360, y_remix[-1]))
+        for nv in range(len(remix_v)):
+                if mouse_over(105, (35, 35), (105, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] > remix_v[nv][1]:
+                    remix_v[nv][0] -= remix_v[nv][1]
+                if mouse_over(572, (35, 35), (105, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] < remix_v[nv][2]:
+                    remix_v[nv][0] += remix_v[nv][1]
+        for r_box in r_boxes:
+            ind = r_boxes.index(r_box)
+            pygame.draw.rect(screen, pygame.Color("white"), r_box, 1)
+            screen.blit(r_text[ind], (300 - int(remix_size_x[ind + 2] / 2), y_remix[ind]))
+        for y_r in y_remix[:-2]:
+            yind = y_remix.index(y_r)
+            if yind == 2:
+                v = int(remix_v[yind][0] / 1000)
+            else:
+                v = remix_v[yind][0]
+            pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((105 , y_r), (35, 35)), 1)
+            if mouse_over(105, (35, 35), (105, y_r)):
+                screen.blit(font_menu.render("-", 1, pygame.Color("blue")), (116, y_r))
+            else:
+                screen.blit(font_menu.render("-", 1, pygame.Color("yellow")), (116, y_r))
+            pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((572 , y_r), (35, 35)), 1)
+            if mouse_over(572, (35, 35), (572, y_r)):
+                screen.blit(font_menu.render("+", 1, pygame.Color("blue")), (579, y_r - 2))
+            else:
+                screen.blit(font_menu.render("+", 1, pygame.Color("yellow")), (579, y_r - 2))
+            pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((460 , y_r), (100, 35)), 1)
+            screen.blit(font_menu.render(str(v), 1, pygame.Color("yellow")), (470, y_r))
+        pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((460 , 575), (160, 35)), 1)
+        if mouse_over(460, (160, 35), (460, 575)):
+            screen.blit(font_menu.render(stairs_remix, 1, pygame.Color("blue")), (462, 575))
+        else:
+            screen.blit(font_menu.render(stairs_remix, 1, pygame.Color("yellow")), (462, 575))
+        pygame.display.update()
+        pygame.display.flip()
+        if mouse_over(252, r_box_size, (200, y_remix[-1])) and click[0] == 1:
+            G = remix_v[0][0] 
+            R = remix_v[1][0]
+            TIME_B = remix_v[2][0]
+            VB = remix_v[3][0]
+            VM = remix_v[4][0]
+            lives = remix_v[5][0]
+            intro = True
+            remix = False
+            play = True
+
+    if play is True:
+        if intro is True:
+            if classic is True:
+                G = 5
+                R = 12
+                TIME_B = 5000
+                VB = 3
+                VM = 4
+                lives = 3
+                classic = False
+            sprt = sprites[1]
+            dk_sprt = sprites[11]
+            p_sprt = sprites[13]
+            last_sprt = sprites[0]
+            cplat = 0
+            plat_max = 0
+            jumptime = 0
+            climbing = False
+            lost_life = False
+            ll_anim = False
+            win = False
+            win_menu = False
+            gameover = False
+            time_last_barrel = pygame.time.get_ticks()
+            anim_time = pygame.time.get_ticks()
+            score = 0
+            rscore = 0
+            x = 180
+            y = 702
+            xb = 240
+            yb = 159
+            LB = math.sqrt(2 * (R ** 2))
+            SIZE = (30, 45)
+            DK_SIZE = (150, 110)
+            A_BARREL = (math.pi) * (R ** 2)
+            DK_POS = [240 - DK_SIZE[0], 159 - DK_SIZE[1]]
+            P_SIZE = (80, 60)
+            P_POS = (320, 69 - P_SIZE[1])
+            SCORE_POS = (600, 10)
+            LIVES_POS = (600, 40)
+            barrels.append([xb, yb, 7])
+            intro = False
+
         def draw_screen(stairs, stairs_broken, platforms):
             for s in stairs:
                 pygame.draw.polygon(screen, pygame.Color('blue'), s[1])
@@ -279,6 +369,10 @@ while running is True:
 
         if keys[pygame.K_q]:
             running = False
+            
+        if keys[pygame.K_m]:
+            play = False
+            menu = True
 
         if keys[pygame.K_SPACE]:
             if y == y_min(x, cplat) - SIZE[1]:
@@ -418,10 +512,10 @@ while running is True:
                     score += 100
                     rscore += 100
 
-        if pygame.time.get_ticks() - time_last_barrel > 5000 and win is False:
+        if pygame.time.get_ticks() - time_last_barrel > TIME_B and win is False:
             barrels.append([xb, yb, 7])
             time_last_barrel = pygame.time.get_ticks()
-        if pygame.time.get_ticks() - time_last_barrel > 4800 or pygame.time.get_ticks() - time_last_barrel < 200:
+        if pygame.time.get_ticks() - time_last_barrel > TIME_B - 200 or pygame.time.get_ticks() - time_last_barrel < 200:
             dk_sprt = sprites[12]
         else:
             dk_sprt = sprites[11]
@@ -466,7 +560,7 @@ while running is True:
             pygame.display.update()
             pygame.display.flip()
             pygame.time.wait(3000)
-            classic = False
+            play = False
             menu = True
 
         if lost_life is False:
