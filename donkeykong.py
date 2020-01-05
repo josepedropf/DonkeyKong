@@ -29,7 +29,9 @@ sprites = [
     "phelp.png",
     "plove.png",
     "marioll.png",
-    "marioh.png"
+    "marioh.png",
+    "logo.png",
+    "lotsofbarrels.png"
 ]
 
 platforms = [
@@ -50,21 +52,22 @@ VM = 4
 TIME_B = 5000
 VB = 3
 lives = 3
-remix_v = [[G, 1, 10], [R, 1, 24], [TIME_B, 1000, 10000], [VB, 1, 10], [VM, 1, 10], [lives, 1, 9]]
+remix_v = [[G, 1, 10], [R, 1, 30], [TIME_B, 1000, 10000], [VB, 1, 10], [VM, 1, 10], [lives, 1, 9]]
 stairs_remix = "Normal"
 font_g = pygame.font.SysFont("comicsans", 30, True)
 font_menu = pygame.font.SysFont("comicsans", 50, True)
 box_size = (180, 30)
 xbox = 400 - int(box_size[0] / 2)
-POS_CL = (xbox, 350)
-POS_RE = (xbox, 450)
-POS_CO = (xbox, 550)
-POS_QU = (xbox, 650)
+POS_CL = (xbox, 400)
+POS_RE = (xbox, 500)
+POS_CO = (xbox, 600)
+POS_QU = (xbox, 700)
 positions = [POS_CL, POS_RE, POS_CO, POS_QU]
 boxes = [pygame.Rect(post, box_size) for post in positions]
 
 
 def draw_menu(alist):
+    font_menu = pygame.font.SysFont("comicsans", 50, True)
     cl_text = font_menu.render("Classic", 1, pygame.Color(alist[0]))
     re_text = font_menu.render("Remix", 1, pygame.Color(alist[1]))
     co_text = font_menu.render("Controls", 1, pygame.Color(alist[2]))
@@ -77,6 +80,7 @@ def draw_menu(alist):
         ind = boxes.index(box)
         pygame.draw.rect(screen, pygame.Color("white"), box, 1)
         screen.blit(texts[ind], (int(xbox + int(box_size[0] / 2)) - int(text_size[ind][0] / 2), positions[ind][1]))
+    screen.blit(pygame.transform.scale(pygame.image.load(sprites[17]), (444, 300)), (178, 50))
     pygame.display.update()
     pygame.display.flip()
 
@@ -95,6 +99,7 @@ def plat_lim(plat):
 def inplat(x, plat, c):
     lrange = plat_lim(plat)
     return x in range(lrange[0] - c, lrange[-1])
+
 
 def y_min(x, plat):
     p = list(platforms[plat])
@@ -123,6 +128,8 @@ def st(x, plat):
 def findx(plat, xx0, xx1):
     if plat >= 5:
         pl = [350, plat_lim(plat)[-1] - 40]
+    elif plat == 0:
+        pl = [200, plat_lim(plat + 1)[-1] - 40]
     else:
         lcplat = [plat_lim(plat)[0], plat_lim(plat)[-1] - 40]
         lnplat = [plat_lim(plat + 1)[0], plat_lim(plat + 1)[-1] - 40]
@@ -185,8 +192,8 @@ while running is True:
         if event.type == pygame.QUIT:
             running = False
 
-    def mouse_over(xbox, box_size, pos):
-        return mpos[0] in range(xbox, xbox + box_size[0]) and mpos[1] in range(pos[1], pos[1] + box_size[1])
+    def mouse_over(box_size, pos):
+        return mpos[0] in range(pos[0], pos[0] + box_size[0]) and mpos[1] in range(pos[1], pos[1] + box_size[1])
 
     if menu is True:
         win = False
@@ -196,19 +203,19 @@ while running is True:
         colors = ["yellow", "yellow", "yellow", "yellow"]
         for p in positions:
             ind = positions.index(p)
-            if mouse_over(xbox, box_size, p) is True:
+            if mouse_over(box_size, p) is True:
                 colors[ind] = "blue"
             else:
                 colors[ind] = "yellow"
         draw_menu(colors)
-        if mouse_over(xbox, box_size, POS_CL) and click[0] == 1:
+        if mouse_over(box_size, POS_CL) and click[0] == 1:
             classic = True
             play = True
             menu = False
-        if mouse_over(xbox, box_size, POS_RE) and click[0] == 1:
+        if mouse_over(box_size, POS_RE) and click[0] == 1:
             remix = True
             menu = False
-        if mouse_over(xbox, box_size, POS_QU) and click[0] == 1:
+        if mouse_over(box_size, POS_QU) and click[0] == 1:
             menu = False
             running = False
 
@@ -224,21 +231,21 @@ while running is True:
         r_box_size = (max(remix_size_x), remix_size_y)
         r_box_x = 400 - int(r_box_size[0] / 2)
         r_boxes = [pygame.Rect((r_box_x - 100, r_box_y), r_box_size) for r_box_y in y_remix[:-1]]
-        if mouse_over(460, (160, 35), (460, 575)) and click[0] == 1:
+        if mouse_over((160, 35), (460, 575)) and click[0] == 1:
             if stairs_remix == "Random":
                 stairs_remix = "Normal"
             else:
                 stairs_remix = "Random"
         screen.fill((0, 0, 0))
         pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((400 - int(r_box_size[0] / 2), y_remix[-1]), r_box_size), 1)
-        if mouse_over(252, r_box_size, (200, y_remix[-1])):
+        if mouse_over(r_box_size, (400 - int(r_box_size[0] / 2), y_remix[-1])):
             screen.blit(font_menu.render(remix_text_string[-2], 1, pygame.Color("blue")), (360, y_remix[-1]))
         else:
             screen.blit(font_menu.render(remix_text_string[-2], 1, pygame.Color("yellow")), (360, y_remix[-1]))
         for nv in range(len(remix_v)):
-                if mouse_over(105, (35, 35), (105, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] > remix_v[nv][1]:
+                if mouse_over((35, 35), (105, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] > remix_v[nv][1]:
                     remix_v[nv][0] -= remix_v[nv][1]
-                if mouse_over(572, (35, 35), (105, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] < remix_v[nv][2]:
+                if mouse_over((35, 35), (572, y_remix[nv])) and click[0] == 1 and remix_v[nv][0] < remix_v[nv][2]:
                     remix_v[nv][0] += remix_v[nv][1]
         for r_box in r_boxes:
             ind = r_boxes.index(r_box)
@@ -251,25 +258,25 @@ while running is True:
             else:
                 v = remix_v[yind][0]
             pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((105 , y_r), (35, 35)), 1)
-            if mouse_over(105, (35, 35), (105, y_r)):
+            if mouse_over((35, 35), (105, y_r)):
                 screen.blit(font_menu.render("-", 1, pygame.Color("blue")), (116, y_r))
             else:
                 screen.blit(font_menu.render("-", 1, pygame.Color("yellow")), (116, y_r))
             pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((572 , y_r), (35, 35)), 1)
-            if mouse_over(572, (35, 35), (572, y_r)):
+            if mouse_over((35, 35), (572, y_r)):
                 screen.blit(font_menu.render("+", 1, pygame.Color("blue")), (579, y_r - 2))
             else:
                 screen.blit(font_menu.render("+", 1, pygame.Color("yellow")), (579, y_r - 2))
             pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((460 , y_r), (100, 35)), 1)
             screen.blit(font_menu.render(str(v), 1, pygame.Color("yellow")), (470, y_r))
         pygame.draw.rect(screen, pygame.Color("white"), pygame.Rect((460 , 575), (160, 35)), 1)
-        if mouse_over(460, (160, 35), (460, 575)):
+        if mouse_over((160, 35), (460, 575)):
             screen.blit(font_menu.render(stairs_remix, 1, pygame.Color("blue")), (462, 575))
         else:
             screen.blit(font_menu.render(stairs_remix, 1, pygame.Color("yellow")), (462, 575))
         pygame.display.update()
         pygame.display.flip()
-        if mouse_over(252, r_box_size, (200, y_remix[-1])) and click[0] == 1:
+        if mouse_over(r_box_size, (200, y_remix[-1])) and click[0] == 1:
             G = remix_v[0][0] 
             R = remix_v[1][0]
             TIME_B = remix_v[2][0]
@@ -300,7 +307,6 @@ while running is True:
             jumptime = 0
             climbing = False
             lost_life = False
-            ll_anim = False
             win = False
             win_menu = False
             gameover = False
@@ -309,7 +315,7 @@ while running is True:
             score = 0
             rscore = 0
             x = 180
-            y = 702
+            y = 763
             xb = 240
             yb = 159
             barrels = []
@@ -387,6 +393,7 @@ while running is True:
                 pygame.draw.polygon(screen, pygame.Color('brown'), sb[1])
             for p in platforms:
                 pygame.draw.polygon(screen, pygame.Color('red'), p)
+            screen.blit(pygame.transform.scale(pygame.image.load(sprites[18]), (75, 100)), (25, 60))
 
         def draw_screen_charct(stairs, stairs_broken, platforms, Dk, Princess, text_score):
             draw_screen(stairs, stairs_broken, platforms)
@@ -436,7 +443,9 @@ while running is True:
                 pygame.display.flip()
                 y += 1
             x = 180
-            y = 702
+            y = 763
+            jumptime = 0
+            climbing = False
             cplat = 0
             plat_max = 0
             sprt = sprites[1]
@@ -447,7 +456,10 @@ while running is True:
                 screen.blit(text_lives, (400 - int(font_g.size("Lives: " + str(lives))[0] / 2), 400 - int(font_g.size("Lives: " + str(lives))[1] / 2)))
             pygame.display.update()
             pygame.display.flip()
-            pygame.time.wait(2000)
+            if gameover is True:
+                pygame.time.wait(3500)
+            else:
+                pygame.time.wait(2000)
             if gameover is True:
                 menu = True
                 play = False
@@ -466,7 +478,7 @@ while running is True:
 
         if keys[pygame.K_q]:
             running = False
-            
+
         if keys[pygame.K_m]:
             play = False
             menu = True
@@ -568,9 +580,9 @@ while running is True:
                 climbing = True
             if climbing is True:
                 if keys[pygame.K_DOWN]:
-                    y += 4
+                    y += VM
                 if keys[pygame.K_UP]:
-                    y -= 4
+                    y -= VM
             if y < y_min(x, cplat + 1) - SIZE[1]:
                 if cplat == plat_max:
                     score += 200
@@ -593,7 +605,7 @@ while running is True:
         for barrel in barrels:
             if inplat(barrel[0], barrel[2], R) is True:
                 if barrel[1] + R < y_min(barrel[0], barrel[2]):
-                    barrel[1] += G
+                    barrel[1] += VB + 2
                 else:
                     if barrel[2] % 2 == 0:
                         barrel[0] -= VB
