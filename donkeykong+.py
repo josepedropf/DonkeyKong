@@ -542,7 +542,7 @@ while running is True:
                 if int(x) > 0 and climbing is False and win is False:
                     x -= VM * dt
             else:
-                if x > 320 and climbing is False and win is False:
+                if int(x) > 320 and climbing is False and win is False:
                     x -= VM * dt
 # Jump 
         if jumptime != 0:
