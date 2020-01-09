@@ -5,11 +5,12 @@
 
 #### Objetivo
 
-Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alterações ao jogo, de modo a dar um cunho único ao projeto 
+Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alterações ao jogo, de modo a dar um cunho único ao projeto. 
 
 #### Descrição
 
-*--- O Donkey Kong é considerado o jogo percursor do género plataforma, para muitos o maior hit dos arcades, que contou com versões para Atari 2600, NES, entre outras. ---*
+*--- O Donkey Kong é considerado o jogo percursor do género plataforma, para muitos o maior hit dos arcades, que contou com versões para Atari 2600, NES, entre outras.
+     Este projeto baseia-se no primeiro nível do jogo, aquele cujo lay-out é mais familiar ao público comum. Conta com um modo clássico em que pretende oferecer uma experiência igual à do jogo original. O ponto mais apelativo do projeto é, contudo, o modo remix. Neste modo o utilizador pode personalizar o seu jogo, mudando a seu gosto vários aspetos do jogo, entre eles a velocidade do Mario, dos barris e até a gravidade. Por fim ainda é possível escolher mudar a localização das escadas para sítios aleatórios, gerando opções virtualmente infinitas de jogo, mas sempre possíveis de "passar". ---*
 
 #### UI
 
@@ -18,6 +19,8 @@ Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alt
 ### Pacotes
 
 - Pygame
+- Math
+- Random
 
 #### Tarefas
 
@@ -33,10 +36,12 @@ Criar um clone do clássico Donkey Kong em Pygame. Explorar algumas pequenas alt
 1. **BARRIL**
    1. coordenadas pos_x, pos_y, dir (-1, 1). desenhava e ia movendo.
    1. colisão entre o barril e o jogador (bounding box)
-1. **FUTURO**
+1. **EXTRAS**
    * animações
    * pontuação
    * menu
+1. **FUTURO**
    * martelo
+   * plataformas diferentes
 
 ### 18/11/2019
