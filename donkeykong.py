@@ -7,7 +7,7 @@ Created on Tue Nov 26 14:58:58 2019
 import pygame
 import math
 import random
-
+#Beginning
 pygame.init()
 
 screen = pygame.display.set_mode((800, 800))
@@ -45,7 +45,7 @@ platforms = [
     ((26, 159), (320, 159), (320, 189), (26, 189)),
     ((240, 99), (320, 99), (320, 129), (240, 129))
 ]
-
+# Menu Constants 
 R = 12
 G = 5
 VM = 4
@@ -65,7 +65,7 @@ POS_QU = (xbox, 700)
 positions = [POS_CL, POS_RE, POS_CO, POS_QU]
 boxes = [pygame.Rect(post, box_size) for post in positions]
 
-
+# Base Functions
 def draw_menu(alist):
     font_menu = pygame.font.SysFont("comicsans", 50, True)
     cl_text = font_menu.render("Classic", 1, pygame.Color(alist[0]))
@@ -177,7 +177,7 @@ def findx(plat, xx0, xx1):
                 else:
                     return random.randrange(xx1 + 50, pl[1])
 
-
+# Modes
 intro = True
 classic = False
 menu = True
@@ -185,9 +185,10 @@ play = False
 remix = False
 running = True
 clock = pygame.time.Clock()
-
+# Game Cicle / Events
 while running is True:
-    dt = clock.tick(30)
+    dt = clock.tick(30) / 50
+    print('dt:', dt)
     click = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -195,10 +196,10 @@ while running is True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 click = True
-            
+# Mouse Function
     def mouse_over(box_size, pos):
         return mpos[0] in range(pos[0], pos[0] + box_size[0]) and mpos[1] in range(pos[1], pos[1] + box_size[1])
-
+# Initial Menu
     if menu is True:
         win = False
         intro = True
@@ -221,7 +222,7 @@ while running is True:
         if mouse_over(box_size, POS_QU) and click:
             menu = False
             running = False
-
+# Remix Menu
     if remix is True:
         mpos = pygame.mouse.get_pos()
         remix_text_string = ["-", "+", "Gravity", "Barrel Size", "Barrel Time", "Barrel Velocity", "Mario Velocity", "Lives", "Stairs", "Play", "Back"]
@@ -310,7 +311,7 @@ while running is True:
             intro = True
             remix = False
             play = True
-
+# Intro/Revive
     if play is True:
         if intro is True:
             if classic is True:
@@ -399,7 +400,7 @@ while running is True:
                             (5, ((280, 99), (320, 99), (320, 159), (280, 159)))
                         ]
             intro = False
-
+# Characters / Texts
         Mario = pygame.transform.scale(pygame.image.load(sprt), SIZE)
         Mario_lostlife = pygame.transform.scale(pygame.image.load(sprites[15]), SIZE)
         Dk = pygame.transform.scale(pygame.image.load(dk_sprt), DK_SIZE)
@@ -409,7 +410,7 @@ while running is True:
         text_lives = font_g.render("Lives: " + str(lives), 1, pygame.Color('white'))
         text_gameover = font_menu.render("Game Over", 1, pygame.Color('white'))
         pos = (x, y)
-  
+# Draw Functions 
         def draw_screen(stairs, stairs_broken, platforms):
             for s in stairs:
                 pygame.draw.polygon(screen, pygame.Color('blue'), s[1])
@@ -424,7 +425,7 @@ while running is True:
             screen.blit(Princess, P_POS)
             screen.blit(Dk, DK_POS)
             screen.blit(text_score, SCORE_POS)
-
+# Stairs Detection Functions
         def inst(x, y, plat, size):
             stairs_plat = []
             for s in stairs:
@@ -444,7 +445,7 @@ while running is True:
                 if x + (size[0] / 2) in range(ssb[0][0], ssb[1][0]) and y <= y_min(x, cplat) - size[1]:
                     return True
             return False
-
+# Lost Life Case
         if lost_life:
             lives -= 1
             if lives == 0:
@@ -489,7 +490,7 @@ while running is True:
                 play = False
                 gameover = False
             lost_life = False
-
+# Win Case
         if win is True:
             barrels = []
             screen.fill((0, 0, 0))
@@ -510,10 +511,10 @@ while running is True:
             pygame.time.wait(3000)
             play = False
             menu = True
-            
+# Platform              
         if inplat(x, cplat, SIZE[0]) is False and y == y_min(x, cplat) - SIZE[1]:
             cplat -= 1
-
+# Keys
         if not lost_life and not win:
             keys = pygame.key.get_pressed()
 
@@ -543,7 +544,7 @@ while running is True:
             else:
                 if x > 320 and climbing is False and win is False:
                     x -= VM
-
+# Jump 
         if jumptime != 0:
             y -= G
             jumptime -= 1
@@ -565,7 +566,7 @@ while running is True:
                     sprt = sprites[2]
                 if last_sprt == sprites[3] or last_sprt == sprites[4]:
                     sprt = sprites[5]
-
+# Sprites
         if y == y_min(x, cplat) - SIZE[1] and climbing is False:
             if keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
                 if last_sprt != sprites[0] and last_sprt != sprites[1]:
@@ -590,7 +591,7 @@ while running is True:
                     sprt = sprites[4]
                 if last_sprt == sprites[2]:
                     sprt = sprites[1]
-
+# Climbing and Sprites
         if climbing is True:
             if y == y_min(x, cplat) - SIZE[1]:
                 sprt = sprites[6]
@@ -614,7 +615,7 @@ while running is True:
                     if last_sprt == sprites[10]:
                         if pygame.time.get_ticks() - anim_time > 200:
                             sprt = sprites[9]
-
+# Animation Time
         if last_sprt != sprt:
             anim_time = pygame.time.get_ticks()
 
@@ -635,7 +636,7 @@ while running is True:
                 cplat += 1
                 climbing = False
                 sprt = sprites[6]
-
+# Climbing State and Sprites
         if y == y_min(x, cplat) - SIZE[1] or inst(x, y, cplat, SIZE) is False:
             climbing = False
 
@@ -644,9 +645,9 @@ while running is True:
                 sprt = sprites[6]
 
         for barrel in barrels:
-            if barrel[2] == 7 and barrel[0] in range (320, 322):
+            if barrel[2] == 7 and barrel[0] in range (319, 326):
                 barrel[2] -= 2
-
+# Barrels
         for barrel in barrels:
             if inplat(barrel[0], barrel[2], R) is True:
                 if barrel[1] + R < y_min(barrel[0], barrel[2]):
@@ -661,7 +662,7 @@ while running is True:
             if barrel[2] == 0 and barrel[0] <= R:
                 barrels.remove(barrel)
             if barrel[2] == cplat and climbing is False:
-                if lost_life is False and x + (SIZE[0] / 2) in range(barrel[0] - 2, barrel[0] + 2) and y + (SIZE[1] / 2) < barrel[1]:
+                if lost_life is False and x + int(SIZE[0] / 2) in range(barrel[0] - int(VM / 2), barrel[0] + int(VM / 2)) and y + (SIZE[1] / 2) < barrel[1]:
                     score += 100
                     rscore += 100
 
@@ -685,7 +686,7 @@ while running is True:
                                 barrel[2] -= 1
                             if barrel[0] < x and keys[pygame.K_LEFT]:
                                 barrel[2] -= 1
-
+# Barrel Draw
         screen.fill((0, 0, 0))
         draw_screen(stairs, stairs_broken, platforms)
         for barrel in barrels:
@@ -697,10 +698,9 @@ while running is True:
             box = pygame.Rect(barrel[0] - (LB / 2), barrel[1] - (LB / 2), LB, LB)
             if Mariobox.colliderect(box):
                 lost_life = True
-
+# Win and Lost Life Conditions
         if cplat == 6:
             win = True
-
 
         if lost_life is False:
             screen.blit(Mario, pos)
@@ -708,28 +708,23 @@ while running is True:
         if win is False:
             p_sprt = sprites[13]
             screen.blit(Dk, DK_POS)
-
+# Real Score
         if rscore >= 3000:
             lives += 1
             rscore = 0
-
+# Screen Update
         screen.blit(Princess, P_POS)
         screen.blit(text_score, SCORE_POS)
         screen.blit(text_lives, LIVES_POS)
         pygame.display.update()
         pygame.display.flip()
-
+# End
 del font_g
 del font_menu
 pygame.display.quit()
 pygame.quit()
 
 """
-# Mario == 60p (altura) * 40p (largura) | Barril == 30p |
-# Plataforma_largura == 30p | Plataforma_comp == 80p | Mini_plat == 54p (-26p)
-# d_curta_plat == 60p | d_longa_plat == 120p
-# Oil na segunda plat | Mario na terceira
-
 # Equações retas superiores das plataformas:
 # Plat 0 == (-30/800) * x + 770 ((800, 740), (800, 770), (0, 800), (0, 770))
 # Plat 1 == (17/347) * x + 618 ((26, 619), (720, 653), (720, 683), (26, 649))
@@ -740,7 +735,4 @@ pygame.quit()
 # Plat 6 Princesa == 69 ((320, 69), (480, 69), (480, 99), (320, 99))
 # Plat 7 plana == 159 ((26, 159), (320, 159), (320, 189), (26, 189))
 # Plat 8 Barris == 99 ((240, 99), (320, 99), (320, 129), (240, 129))
-
-#xi == 180
-#yi == 703
 """
