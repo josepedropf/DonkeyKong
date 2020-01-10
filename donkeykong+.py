@@ -7,7 +7,7 @@ Created on Tue Nov 26 14:58:58 2019
 import pygame
 import math
 import random
-#Beginning
+# Beginning
 pygame.init()
 
 screen = pygame.display.set_mode((800, 800))
@@ -45,7 +45,8 @@ platforms = [
     ((26, 159), (320, 159), (320, 189), (26, 189)),
     ((240, 99), (320, 99), (320, 129), (240, 129))
 ]
-# Menu Constants 
+# Menu Constants
+barrels = []
 R = 12
 G = 6
 VM = 5
@@ -188,6 +189,8 @@ clock = pygame.time.Clock()
 # Game Cicle / Events
 while running is True:
     dt = clock.tick(30) / 50
+    if dt > 3:
+        dt = 1
     print('dt:', dt)
     click = False
     for event in pygame.event.get():
@@ -466,7 +469,7 @@ while running is True:
                 screen.blit(text_score, SCORE_POS)
                 pygame.display.update()
                 pygame.display.flip()
-                y += 1 * dt
+                y += 2 * dt
             x = 180
             y = 763
             jumptime = 0
@@ -494,12 +497,13 @@ while running is True:
         if win is True:
             barrels = []
             screen.fill((0, 0, 0))
+            y = 69 - SIZE[1]
             draw_screen(stairs, stairs_broken, platforms)
             p_sprt = sprites[14]
             screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load(sprites[11]), DK_SIZE), 180), (DK_POS[0], 680))
             sprt = sprites[4]
             screen.blit(pygame.transform.scale(pygame.image.load(p_sprt), P_SIZE), P_POS)
-            screen.blit(pygame.transform.scale(pygame.image.load(sprt), SIZE), pos)
+            screen.blit(pygame.transform.scale(pygame.image.load(sprt), SIZE), (x, y))
             pygame.display.update()
             pygame.display.flip()
             pygame.time.wait(3000)
@@ -691,7 +695,7 @@ while running is True:
         draw_screen(stairs, stairs_broken, platforms)
         for barrel in barrels:
             if lost_life is False:
-                pygame.draw.circle(screen, pygame.Color('green'), (int(barrel[0]), int(barrel[1])), R)
+                pygame.draw.circle(screen, pygame.Color('sandybrown'), (int(barrel[0]), int(barrel[1])), R)
 
         Mariobox = pygame.Rect(pos, SIZE)
         for barrel in barrels:
