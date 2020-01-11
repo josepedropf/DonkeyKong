@@ -191,7 +191,6 @@ while running is True:
     dt = clock.tick(30) / 50
     if dt > 3:
         dt = 1
-    print('dt:', dt)
     click = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
